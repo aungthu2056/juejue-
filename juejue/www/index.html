@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jue jue</title>
+<link rel="icon" href="juejueicon.png">
+<style>
+:root {
+  --primary-color: #006400; /* အနက်စိမ်း */
+  --text-color: #ffffff;
+}
+
+body {
+  font-family: system-ui, "Noto Sans Myanmar", "Pyidaungsu", sans-serif;
+  margin:0;
+  background:#f5f5f5;
+}
+
+header {
+  display:flex;
+  justify-content:space-around;
+  background:var(--primary-color);
+  color:var(--text-color);
+  font-weight:bold;
+  padding:12px 0;
+  cursor:pointer;
+}
+
+.page { display:none; padding:16px; }
+.active { display:block; }
+
+input { width:100%; padding:6px; margin:6px 0; box-sizing:border-box; }
+label { font-weight:bold; }
+button { padding:8px 12px; margin-top:6px; background:var(--primary-color); color:#fff; border:none; cursor:pointer; }
+.result { margin-top:12px; font-weight:bold; color:#000; }
+</style>
+</head>
+<body>
+
+<header>
+  <div onclick="showPage('inventory')">ပစ္စည်းအဝင်စာရင်း</div>
+  <div onclick="showPage('payment')">စုစုပေါင်းပေးရမဲ့ငွေ</div>
+  <div onclick="showPage('profit')">အမြတ်</div>
+</header>
+
+<div id="inventory" class="page active">
+  <h2>ပစ္စည်းအဝင်စာရင်း</h2>
+  <label>ပစ္စည်းအမျိုးအစား</label>
+  <input type="text" id="itemName" placeholder="ပစ္စည်းအမျိုးအစား">
+  <label>ဖာအရေအတွက်</label>
+  <input type="number" id="quantityPack" value="0">
+  <label>အထုပ်အရေအတွက်</label>
+  <input type="number" id="quantityUnit" value="0">
+  <label>တထုပ်ချင်းဈေးနှုန်း</label>
+  <input type="number" id="unitPrice" value="0">
+  <label>ကားခ (စုစုပေါင်း)</label>
+  <input type="number" id="transportFee" value="0">
+  <button onclick="calculateTotal()">စုစုပေါင်းစာရင်းတွက်ချက်</button>
+  <div class="result" id="totalResult">စုစုပေါင်း = 0</div>
+</div>
+
+<div id="payment" class="page">
+  <h2>စုစုပေါင်းပေးရမဲ့ငွေ</h2>
+  <label>ပေးချေရမဲ့ငွေ</label>
+  <input type="number" id="paidAmount" value="0">
+  <label>K-pay ဖြင့် ပေးငွေ</label>
+  <input type="number" id="kPay" value="0">
+  <button onclick="calculateRemain()">ကျန်ငွေတွက်ချက်</button>
+  <div class="result" id="remainResult">ကျန်ငွေ = 0</div>
+</div>
+
+<div id="profit" class="page">
+  <h2>အမြတ်</h2>
+  <label>တထုပ်ချင်းရောင်းဈေး</label>
+  <input type="number" id="sellPrice" value="0">
+  <button onclick="calculateProfit()">အမြတ်တွက်ချက်</button>
+  <div class="result" id="profitResult">အမြတ် = 0</div>
+</div>
+
+<script>
+let totalInventory = 0;
+
+function showPage(pageId){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+
+function calculateTotal(){
+  const quantityPack = Number(document.getElementById('quantityPack').value);
+  const quantityUnit = Number(document.getElementById('quantityUnit').value);
+  const unitPrice = Number(document.getElementById('unitPrice').value);
+  const transportFee = Number(document.getElementById('transportFee').value);
+  const totalUnit = quantityPack + quantityUnit;
+  const totalPrice = totalUnit * unitPrice + transportFee;
+  totalInventory = totalUnit;
+  document.getElementById('totalResult').innerText = `စုစုပေါင်း = ${totalPrice.toLocaleString()} ကျပ်`;
+}
+
+function calculateRemain(){
+  const totalPriceText = document.getElementById('totalResult').innerText;
+  const totalPrice = parseInt(totalPriceText.replace(/[^\d]/g,'') || 0);
+  const paidAmount = Number(document.getElementById('paidAmount').value);
+  const kPay = Number(document.getElementById('kPay').value);
+  const remain = totalPrice - paidAmount - kPay;
+  document.getElementById('remainResult').innerText = `ကျန်ငွေ = ${remain.toLocaleString()} ကျပ်`;
+}
+
+function calculateProfit(){
+  const sellPrice = Number(document.getElementById('sellPrice').value);
+  const totalPriceText = document.getElementById('totalResult').innerText;
+  const totalPaid = parseInt(totalPriceText.replace(/[^\d]/g,'') || 0);
+  const totalRevenue = totalInventory * sellPrice;
+  const profit = totalRevenue - totalPaid;
+  document.getElementById('profitResult').innerText = `အမြတ် = ${profit.toLocaleString()} ကျပ်`;
+}
+</script>
+
+</body>
+</html>
